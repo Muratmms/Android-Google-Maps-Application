@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">KonumKayitUygulamasi</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_istanbulharita">Map</string>
+    <string name="title_activity_maps2">Map</string>
+    <string name="title_activity_activitynerede">Map</string>
+    <string name="title_activity_maps_nerede">Map</string>
+    <string name="title_activity_ankaraharita">Map</string>
+    <string name="title_activity_izmirharita">Map</string>
+    <string name="title_activity_bursaharita">Map</string>
+    <string name="title_activity_antalyaharita">Map</string>
+    <string name="title_activity_eskisehirharita">Map</string>
+</resources>

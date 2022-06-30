@@ -1,0 +1,217 @@
+<html>
+<head>
+<title>MapsActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #000080; font-weight: bold;}
+.s1 { color: #000000;}
+.s2 { color: #808080; font-style: italic;}
+.s3 { color: #008000; font-weight: bold;}
+.s4 { color: #0000ff;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+MapsActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span>com.gelisim.konumkayituygulamasi;
+
+<span class="s0">import </span>androidx.annotation.NonNull;
+<span class="s0">import </span>androidx.core.app.ActivityCompat;
+<span class="s0">import </span>androidx.core.content.ContextCompat;
+<span class="s0">import </span>androidx.fragment.app.FragmentActivity;
+
+<span class="s0">import </span>android.Manifest;
+<span class="s0">import </span>android.app.AlertDialog;
+<span class="s0">import </span>android.content.Context;
+<span class="s0">import </span>android.content.DialogInterface;
+<span class="s0">import </span>android.content.Intent;
+<span class="s0">import </span>android.content.SharedPreferences;
+<span class="s0">import </span>android.content.pm.PackageManager;
+<span class="s0">import </span>android.database.sqlite.SQLiteDatabase;
+<span class="s0">import </span>android.database.sqlite.SQLiteStatement;
+<span class="s0">import </span>android.location.Address;
+<span class="s0">import </span>android.location.Geocoder;
+<span class="s0">import </span>android.location.Location;
+<span class="s0">import </span>android.location.LocationListener;
+<span class="s0">import </span>android.location.LocationManager;
+<span class="s0">import </span>android.os.Bundle;
+<span class="s0">import </span>android.widget.Toast;
+
+<span class="s0">import </span>com.google.android.gms.maps.CameraUpdateFactory;
+<span class="s0">import </span>com.google.android.gms.maps.GoogleMap;
+<span class="s0">import </span>com.google.android.gms.maps.OnMapReadyCallback;
+<span class="s0">import </span>com.google.android.gms.maps.SupportMapFragment;
+<span class="s0">import </span>com.google.android.gms.maps.model.LatLng;
+<span class="s0">import </span>com.google.android.gms.maps.model.MarkerOptions;
+
+<span class="s0">import </span>java.io.IOException;
+<span class="s0">import </span>java.util.List;
+<span class="s0">import </span>java.util.Locale;
+
+<span class="s0">public class </span>MapsActivity <span class="s0">extends </span>FragmentActivity <span class="s0">implements </span>OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
+
+    <span class="s0">private </span>GoogleMap mMap;
+    LocationManager locationManager;
+    LocationListener locationListener;
+    SQLiteDatabase database;
+
+
+    @Override
+    <span class="s0">protected void </span>onCreate(Bundle savedInstanceState) {
+        <span class="s0">super</span>.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_maps);
+        <span class="s2">// Obtain the SupportMapFragment and get notified when the map is ready to be used.</span>
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        <span class="s0">assert </span>mapFragment != <span class="s0">null</span>;
+        mapFragment.getMapAsync(<span class="s0">this</span>);
+    }
+    
+    @Override
+    <span class="s0">public void </span>onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.setOnMapLongClickListener(<span class="s0">this</span>);
+        Intent intent = getIntent();
+        String info = intent.getStringExtra(<span class="s3">&quot;info&quot;</span>);
+
+        <span class="s0">if</span>(info.matches(<span class="s3">&quot;new&quot;</span>)) {
+
+            locationManager = (LocationManager) <span class="s0">this</span>.getSystemService(Context.LOCATION_SERVICE);
+            locationListener = <span class="s0">new </span>LocationListener() {
+                @Override
+                <span class="s0">public void </span>onLocationChanged(@NonNull Location location) {
+
+                    SharedPreferences sharedPreferences = MapsActivity.<span class="s0">this</span>.getSharedPreferences(<span class="s3">&quot;com.gelisim.konumkayituygulamasi&quot;</span>,MODE_PRIVATE);
+                    <span class="s0">boolean </span>trackBoolean = sharedPreferences.getBoolean(<span class="s3">&quot;trackBoolean&quot;</span>,<span class="s0">false</span>);
+
+                    <span class="s0">if</span>(trackBoolean == <span class="s0">false</span>) {
+
+                        LatLng userLocation = <span class="s0">new </span>LatLng(location.getLatitude(),location.getLongitude());
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, <span class="s4">15</span>));
+                        sharedPreferences.edit().putBoolean(<span class="s3">&quot;trackBoolean&quot;</span>,<span class="s0">true</span>).apply();
+
+                    }
+                }
+            };
+            <span class="s0">if</span>(ContextCompat.checkSelfPermission(<span class="s0">this</span>, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(<span class="s0">this</span>,<span class="s0">new </span>String[] {Manifest.permission.ACCESS_FINE_LOCATION},<span class="s4">1</span>);
+            }
+            <span class="s0">else </span>{
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,<span class="s4">0</span>,<span class="s4">0</span>,locationListener);
+
+                Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                <span class="s0">if</span>(lastLocation != <span class="s0">null</span>) {
+                    LatLng lastUserLocation = <span class="s0">new </span>LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastUserLocation,<span class="s4">15</span>));
+                }
+
+            }
+
+        }
+        <span class="s0">else </span>{
+            <span class="s2">//sqllite data</span>
+        }
+
+
+    }
+
+    @Override
+    <span class="s0">public void </span>onRequestPermissionsResult(<span class="s0">int </span>requestCode, @NonNull String[] permissions, @NonNull <span class="s0">int</span>[] grantResults) {
+        <span class="s0">super</span>.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        <span class="s0">if</span>(grantResults.length &gt; <span class="s4">0</span>) {
+            <span class="s0">if</span>(requestCode == <span class="s4">1</span>) {
+                <span class="s0">if</span>(ContextCompat.checkSelfPermission(<span class="s0">this</span>,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,<span class="s4">0</span>,<span class="s4">0</span>,locationListener);
+
+                    Intent intent = getIntent();
+                    String info = intent.getStringExtra(<span class="s3">&quot;info&quot;</span>);
+                    <span class="s0">if</span>(info.matches(<span class="s3">&quot;new&quot;</span>)) {
+
+                        Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                        <span class="s0">if</span>(lastLocation != <span class="s0">null</span>) {
+                            LatLng lastUserLocation = <span class="s0">new </span>LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastUserLocation,<span class="s4">15</span>));
+                        }
+                    }
+                    <span class="s0">else </span>{
+                        <span class="s2">//sqllite data</span>
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    <span class="s0">public void </span>onMapLongClick(LatLng latLng) {
+
+        Geocoder geocoder = <span class="s0">new </span>Geocoder(getApplicationContext(), Locale.getDefault());
+        String address = <span class="s3">&quot;&quot;</span>;
+
+        <span class="s0">try </span>{
+            List&lt;Address&gt; addressList = geocoder.getFromLocation(latLng.latitude,latLng.longitude,<span class="s4">1</span>);
+            <span class="s0">if</span>(addressList != <span class="s0">null </span>&amp;&amp; addressList.size() &gt; <span class="s4">0</span>) {
+                <span class="s0">if</span>(addressList.get(<span class="s4">0</span>).getThoroughfare() != <span class="s0">null</span>) {
+                    address += addressList.get(<span class="s4">0</span>).getThoroughfare();
+
+                    <span class="s0">if</span>(addressList.get(<span class="s4">0</span>).getSubThoroughfare() != <span class="s0">null</span>) {
+                        address +=<span class="s3">&quot; &quot;</span>;
+                        address += addressList.get(<span class="s4">0</span>).getSubThoroughfare();
+                    }
+                }
+            } <span class="s0">else </span>{
+                address = <span class="s3">&quot;Yeni Yer&quot;</span>;
+            }
+        } <span class="s0">catch </span>(IOException e) {
+            e.printStackTrace();
+        }
+        mMap.clear();
+        mMap.addMarker(<span class="s0">new </span>MarkerOptions().title(address).position(latLng));
+
+        Double latitude = latLng.latitude;
+        Double longitude = latLng.longitude;
+
+        <span class="s0">final </span>Place place = <span class="s0">new </span>Place(address,latitude,longitude);
+
+        AlertDialog.Builder alertDialog = <span class="s0">new </span>AlertDialog.Builder(MapsActivity.<span class="s0">this</span>);
+        alertDialog.setCancelable(<span class="s0">false</span>);
+        alertDialog.setTitle(<span class="s3">&quot;Kaydetmek İstediğine Emin Misin ?&quot;</span>);
+        alertDialog.setMessage(place.name);
+        alertDialog.setPositiveButton(<span class="s3">&quot;Evet&quot;</span>, <span class="s0">new </span>DialogInterface.OnClickListener() {
+            @Override
+            <span class="s0">public void </span>onClick(DialogInterface dialog, <span class="s0">int </span>which) {
+                  <span class="s0">try </span>{
+                      database = MapsActivity.<span class="s0">this</span>.openOrCreateDatabase(<span class="s3">&quot;Places&quot;</span>, MODE_PRIVATE, <span class="s0">null</span>);
+                      database.execSQL(<span class="s3">&quot;CREATE TABLE IF NOT EXISTS places (id INTEGER PRIMARY KEY, name VARCHAR, latitude VARCHAR, longitude VARCHAR)&quot;</span>);
+
+                      String toCompile = <span class="s3">&quot;INSERT INTO places (name, latitude, longitude) VALUES (?,?,?)&quot;</span>;
+
+                      SQLiteStatement sqLiteStatement = database.compileStatement(toCompile);
+                      sqLiteStatement.bindString(<span class="s4">1</span>,place.name);
+                      sqLiteStatement.bindString(<span class="s4">2</span>,String.valueOf(place.latitude));
+                      sqLiteStatement.bindString(<span class="s4">3</span>,String.valueOf(place.longitude));
+                      sqLiteStatement.execute();
+
+                      Toast.makeText(getApplicationContext(),<span class="s3">&quot;Kaydedildi&quot;</span>,Toast.LENGTH_LONG).show();
+                  }
+                  <span class="s0">catch </span>(Exception e) {
+                      e.printStackTrace();
+                  }
+
+            }
+        });
+        alertDialog.setNegativeButton(<span class="s3">&quot;Hayır&quot;</span>, <span class="s0">new </span>DialogInterface.OnClickListener() {
+            @Override
+            <span class="s0">public void </span>onClick(DialogInterface dialog, <span class="s0">int </span>which) {
+
+                Toast.makeText(getApplicationContext(),<span class="s3">&quot;İptal Edildi&quot;</span>,Toast.LENGTH_LONG).show();
+
+            }
+        });
+        alertDialog.show();
+    }
+}</pre>
+</body>
+</html>

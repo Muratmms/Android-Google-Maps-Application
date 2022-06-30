@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/turkiye"
+    tools:context=".MainActivity2">
+
+
+    <Button
+        android:id="@+id/istanbul"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_weight="10"
+        android:insetLeft="10dp"
+        android:insetTop="10dp"
+        android:insetRight="10dp"
+        android:insetBottom="10dp"
+        android:text="İSTANBUL"
+        android:visibility="visible"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/ankara"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_weight="10"
+        android:insetLeft="10dp"
+        android:insetTop="10dp"
+        android:insetRight="10dp"
+        android:insetBottom="10dp"
+        android:text="ANKARA" />
+
+    <Button
+        android:id="@+id/izmir"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_weight="10"
+        android:insetLeft="10dp"
+        android:insetTop="10dp"
+        android:insetRight="10dp"
+        android:insetBottom="10dp"
+        android:text="İZMİR" />
+
+    <Button
+        android:id="@+id/bursa"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_weight="10"
+        android:insetLeft="10dp"
+        android:insetTop="10dp"
+        android:insetRight="10dp"
+        android:insetBottom="10dp"
+        android:text="BURSA" />
+
+    <Button
+        android:id="@+id/antalya"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_weight="10"
+        android:insetLeft="10dp"
+        android:insetTop="10dp"
+        android:insetRight="10dp"
+        android:insetBottom="10dp"
+        android:text="ANTALYA" />
+
+    <Button
+        android:id="@+id/eskisehir"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_weight="10"
+        android:insetLeft="10dp"
+        android:insetTop="10dp"
+        android:insetRight="10dp"
+        android:insetBottom="10dp"
+        android:text="ESKİŞEHİR" />
+
+</LinearLayout>

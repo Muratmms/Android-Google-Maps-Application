@@ -1,0 +1,107 @@
+<html>
+<head>
+<title>MainActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #000080; font-weight: bold;}
+.s1 { color: #000000;}
+.s2 { color: #008000; font-weight: bold;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+MainActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span>com.gelisim.konumkayituygulamasi;
+
+<span class="s0">import </span>androidx.annotation.NonNull;
+<span class="s0">import </span>androidx.appcompat.app.AppCompatActivity;
+
+<span class="s0">import </span>android.content.Intent;
+<span class="s0">import </span>android.database.Cursor;
+<span class="s0">import </span>android.database.sqlite.SQLiteDatabase;
+<span class="s0">import </span>android.os.Bundle;
+<span class="s0">import </span>android.view.Menu;
+<span class="s0">import </span>android.view.MenuInflater;
+<span class="s0">import </span>android.view.MenuItem;
+<span class="s0">import </span>android.widget.ArrayAdapter;
+<span class="s0">import </span>android.widget.ListView;
+
+<span class="s0">import </span>java.util.ArrayList;
+
+<span class="s0">public class </span>MainActivity <span class="s0">extends </span>AppCompatActivity {
+
+    SQLiteDatabase database;
+    ArrayList&lt;Place&gt; placeList = <span class="s0">new </span>ArrayList&lt;&gt;();
+    ListView listView;
+    CustomAdapter customAdapter;
+
+    @Override
+    <span class="s0">public boolean </span>onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.yer_ekle,menu);
+        <span class="s0">return super</span>.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    <span class="s0">public boolean </span>onOptionsItemSelected(@NonNull MenuItem item) {
+        <span class="s0">if</span>(item.getItemId() == R.id.yer_ekle){
+            Intent intent = <span class="s0">new </span>Intent(<span class="s0">this</span>,MapsActivity.<span class="s0">class</span>);
+            intent.putExtra(<span class="s2">&quot;info&quot;</span>,<span class="s2">&quot;new&quot;</span>);
+            startActivity(intent);
+        }
+        <span class="s0">return super</span>.onOptionsItemSelected(item);
+    }
+
+    @Override
+    <span class="s0">protected void </span>onCreate(Bundle savedInstanceState) {
+        <span class="s0">super</span>.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        listView = findViewById(R.id.listView);
+        getData();
+    }
+
+    <span class="s0">public void </span>getData() {
+        customAdapter = <span class="s0">new </span>CustomAdapter(<span class="s0">this</span>,placeList);
+              <span class="s0">try </span>{
+
+                  database = <span class="s0">this</span>.openOrCreateDatabase(<span class="s2">&quot;Places&quot;</span>,MODE_PRIVATE,<span class="s0">null</span>);
+                  Cursor cursor = database.rawQuery(<span class="s2">&quot;SELECT * FROM places&quot;</span>,<span class="s0">null</span>);
+
+                  <span class="s0">int </span>nameIx = cursor.getColumnIndex(<span class="s2">&quot;name&quot;</span>);
+                  <span class="s0">int </span>latitudeIx = cursor.getColumnIndex(<span class="s2">&quot;latitude&quot;</span>);
+                  <span class="s0">int </span>longitudeIx = cursor.getColumnIndex(<span class="s2">&quot;longitude&quot;</span>);
+
+                  <span class="s0">while</span>(cursor.moveToNext()) {
+
+                      String nameFromDatabase = cursor.getString(nameIx);
+                      String latitudeFromDatabase = cursor.getString(latitudeIx);
+                      String longitudeFromDatabase = cursor.getString(longitudeIx);
+
+                      Double latitude = Double.parseDouble(latitudeFromDatabase);
+                      Double longitude = Double.parseDouble(longitudeFromDatabase);
+
+                      Place place = <span class="s0">new </span>Place(nameFromDatabase,latitude,longitude);
+
+                      System.out.println(place.name);
+
+                      placeList.add(place);
+
+                  }
+                  customAdapter.notifyDataSetChanged();
+                  cursor.close();
+
+              } <span class="s0">catch </span>(Exception e) {
+
+              }
+
+
+             listView.setAdapter(customAdapter);
+
+
+    }
+}</pre>
+</body>
+</html>

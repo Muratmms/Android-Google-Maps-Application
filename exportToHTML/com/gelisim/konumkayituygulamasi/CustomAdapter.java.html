@@ -1,0 +1,55 @@
+<html>
+<head>
+<title>CustomAdapter.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #000080; font-weight: bold;}
+.s1 { color: #000000;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+CustomAdapter.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span>com.gelisim.konumkayituygulamasi;
+
+<span class="s0">import </span>android.content.Context;
+<span class="s0">import </span>android.view.LayoutInflater;
+<span class="s0">import </span>android.view.View;
+<span class="s0">import </span>android.view.ViewGroup;
+<span class="s0">import </span>android.widget.ArrayAdapter;
+<span class="s0">import </span>android.widget.TextView;
+
+<span class="s0">import </span>androidx.annotation.NonNull;
+<span class="s0">import </span>androidx.annotation.Nullable;
+
+<span class="s0">import </span>java.util.ArrayList;
+
+<span class="s0">public class </span>CustomAdapter <span class="s0">extends </span>ArrayAdapter&lt;Place&gt; {
+
+    ArrayList&lt;Place&gt; placeList;
+    Context context;
+
+    <span class="s0">public </span>CustomAdapter(@NonNull Context context, ArrayList&lt;Place&gt; placeList) {
+        <span class="s0">super</span>(context,R.layout.custom_list_row, placeList);
+        <span class="s0">this</span>.placeList = placeList;
+        <span class="s0">this</span>.context = context;
+    }
+
+    @NonNull
+    @Override
+    <span class="s0">public </span>View getView(<span class="s0">int </span>position, @Nullable View convertView, @NonNull ViewGroup parent) {
+
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        View customView = layoutInflater.inflate(R.layout.custom_list_row,parent,<span class="s0">false</span>);
+        TextView nameTextView = customView.findViewById(R.id.nameTextView);
+        nameTextView.setText(placeList.get(position).name);
+
+        <span class="s0">return </span>customView;
+    }
+}
+</pre>
+</body>
+</html>
